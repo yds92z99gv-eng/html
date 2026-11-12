@@ -1,4 +1,22 @@
 <!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><style id="pre">html,body{background:#2a3543}</style><script>/* ===== ربط Supabase الكامل: دخول (app_login) + سحب (app_pull) + دفع التغييرات (app_push) ===== */
+/* ---- أدوات أمان ---- */
+window.__rpw=function(){var A='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789',r=new Uint32Array(12),o='';try{crypto.getRandomValues(r)}catch(e){for(var j=0;j<12;j++)r[j]=Math.floor(Math.random()*4294967296)}for(var i=0;i<12;i++)o+=A[r[i]%A.length];return o};
+(function(){var K=[0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+function rr(x,n){return(x>>>n)|(x<<(32-n))}
+function sha(b){var l=b.length,n=((l+9+63)>>6)<<6,m=new Uint8Array(n);m.set(b);m[l]=0x80;var bl=l*8;m[n-4]=bl>>>24;m[n-3]=bl>>>16;m[n-2]=bl>>>8;m[n-1]=bl;
+var H=[0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19],W=new Array(64);
+for(var o=0;o<n;o+=64){for(var i=0;i<16;i++)W[i]=(m[o+4*i]<<24)|(m[o+4*i+1]<<16)|(m[o+4*i+2]<<8)|m[o+4*i+3];
+for(i=16;i<64;i++){var s0=rr(W[i-15],7)^rr(W[i-15],18)^(W[i-15]>>>3),s1=rr(W[i-2],17)^rr(W[i-2],19)^(W[i-2]>>>10);W[i]=(W[i-16]+s0+W[i-7]+s1)|0}
+var a=H[0],b2=H[1],c=H[2],d=H[3],e=H[4],f=H[5],g=H[6],h=H[7];
+for(i=0;i<64;i++){var S1=rr(e,6)^rr(e,11)^rr(e,25),ch=(e&f)^(~e&g),t1=(h+S1+ch+K[i]+W[i])|0,S0=rr(a,2)^rr(a,13)^rr(a,22),mj=(a&b2)^(a&c)^(b2&c),t2=(S0+mj)|0;h=g;g=f;f=e;e=(d+t1)|0;d=c;c=b2;b2=a;a=(t1+t2)|0}
+H[0]=(H[0]+a)|0;H[1]=(H[1]+b2)|0;H[2]=(H[2]+c)|0;H[3]=(H[3]+d)|0;H[4]=(H[4]+e)|0;H[5]=(H[5]+f)|0;H[6]=(H[6]+g)|0;H[7]=(H[7]+h)|0}
+var out=new Uint8Array(32);for(i=0;i<8;i++){out[4*i]=H[i]>>>24;out[4*i+1]=H[i]>>>16;out[4*i+2]=H[i]>>>8;out[4*i+3]=H[i]}return out}
+function u8(str){return new TextEncoder().encode(str)}
+function hex(b){var o='';for(var i=0;i<b.length;i++)o+=(b[i]<16?'0':'')+b[i].toString(16);return o}
+window.__sha256hex=function(str){return hex(sha(u8(str)))};
+window.__kh=function(data,salt){var d=u8(data),x=sha(u8(String(salt)+':'+data));for(var i=0;i<20000;i++){var m=new Uint8Array(x.length+d.length);m.set(x);m.set(d,x.length);x=sha(m)}return hex(x)};
+window.__salt=function(){return window.__rpw()+window.__rpw()};
+})();
 (function(){
 'use strict';
 var CFG={url:'https://lufyamrukkbqrebddmid.supabase.co',key:'sb_publishable_xFgEwy2orspw27xS5uxvjg_m0GTTf2-'};
@@ -83,7 +101,7 @@ function injectPw(b,u,pw){if(!u||!pw)return;
 function build(d,local){var b={};Object.keys(d.t||{}).forEach(function(t){b[t]=d.t[t]});Object.keys(d.kv||{}).forEach(function(k){b[k]=d.kv[k]});
  if(local)Object.keys(local).forEach(function(k){if(!(k in b)&&!TS[k])b[k]=local[k]});return b}
 function hasLocal(l){return !!l&&((l.students&&l.students.length)||(l.schools&&l.schools.length)||(l.users&&l.users.filter(function(u){return !u.plat}).length>1))}
-function setSL(){var S=window.__SL;if(S&&S.ok&&!S.__w){var o=S.ok;S.__w=1;S.ok=function(i,p){var k=h(String(cl(i)).toLowerCase()+'|'+cl(p));if(U&&U.okh&&U.okh===k&&tok())return true;return o.apply(this,arguments)}}}
+function setSL(){var S=window.__SL;if(S&&S.ok&&!S.__w){var o=S.ok;S.__w=1;S.ok=function(i,p){var k=(U&&U.salt)?window.__kh(String(cl(i)).toLowerCase()+'|'+cl(p),U.salt):'';if(U&&U.okh&&k&&U.okh===k&&tok())return true;return o.apply(this,arguments)}}}
 try{var _sl;Object.defineProperty(window,'__SL',{configurable:true,get:function(){return _sl},set:function(v){_sl=v;setSL()}})}catch(e){}
 
 /* ---- تسجيل الدخول ---- */
@@ -95,7 +113,7 @@ document.addEventListener('submit',function(e){
  e.preventDefault();e.stopImmediatePropagation();
  var ue=document.getElementById('lu'),pe=document.getElementById('lp'),id=cl(ue&&ue.value),pw=cl(pe&&pe.value),btn=f.querySelector('button[type=submit]');
  if(!id||!pw){fail('أدخل اسم المستخدم وكلمة المرور');return}
- var okh=h(id.toLowerCase()+'|'+pw);
+ var salt=window.__salt(),okh=window.__kh(id.toLowerCase()+'|'+pw,salt);
  function done(){if(btn)btn.disabled=false}
  if(btn)btn.disabled=true;
  rpc('app_login',{p_user:id,p_pw:pw,p_school:schoolCode()||null}).then(function(r){
@@ -108,14 +126,14 @@ document.addEventListener('submit',function(e){
    else b=build(d,local);
    injectPw(b,d.user,pw);
    LS.setItem(AK,JSON.stringify(b));lastRaw=LS.getItem(AK);
-   LS.setItem(KT,r.token);U={id:d.user.id,role:d.user.role,plat:!!d.user.plat,school:d.user.school,kind:d.user.kind,okh:okh};sj(KU,U);
+   LS.setItem(KT,r.token);U={id:d.user.id,role:d.user.role,plat:!!d.user.plat,school:d.user.school,kind:d.user.kind,okh:okh,salt:salt};sj(KU,U);
    SN=up?{t:{},k:{}}:snapOf(b);sj(KS,SN);Q={rows:{},kv:{}};saveQ();expiredF=false;
    if(up){lastRaw=null;scan();flush()}
    setSL();done();setStat();pass(f)})
  }).catch(function(){
   done();
   /* بدون اتصال: السماح بالدخول فقط لنفس المستخدم الذي دخل سابقاً على هذا الجهاز */
-  if(U&&U.okh===okh&&gj(AK,null)){setSL();pass(f)}else fail('تعذّر الاتصال بالخادم. تأكد من الإنترنت ثم حاول مرة أخرى')})
+  if(U&&U.salt&&U.okh&&U.okh===window.__kh(id.toLowerCase()+'|'+pw,U.salt)&&gj(AK,null)){setSL();pass(f)}else fail('تعذّر الاتصال بالخادم. تأكد من الإنترنت ثم حاول مرة أخرى')})
 },true);
 
 /* ---- تحديث يدوي من السحابة ---- */
@@ -259,7 +277,7 @@ function demo(lc,pw){var L=[['U','s'],['P','p'],['TCH','t'],['KM','m'],['AM','a'
 /* مدرسة الحساب حسب نفس ترتيب بحث الدخول الأصلي */
 function acct(id,pw){var lc=String(cl(id)).toLowerCase(),p=cl(pw),d=adb();
  if(demo(lc,p))return 'main';
- if(!d){if(lc=='admin'&&p=='1001')return 'main';if(lc=='wdmin'&&p=='1001')return '#plat';return null}
+ if(!d){return null}
  var R={'مدير المقصف':'m','مسؤول الحضور':'a','معلم':'t'};
  var u=(d.users||[]).filter(function(x){return x.user&&String(x.user).toLowerCase()===lc&&x.pw==p&&(!R[x.role]||PXf(x.user,R[x.role]))})[0];
  if(u)return userSch(d,u);
@@ -2398,7 +2416,7 @@ function tOv(a,b){const x=tRg(a),y=tRg(b);return x&&y?x[0]<y[1]&&y[0]<x[1]:Strin
 function flagClash(sch){sch.forEach((p,i)=>{for(let j=0;j<sch.length;j++){if(j!=i&&sch[j][0]==p[0]&&tOv(sch[j][1],p[1])){p[4]=1;p[5]=sch[j][2]+' — '+(sch[j][3]||'');break}}});return sch}
 function adminAuth(id,pw){
  if(window.__SL){const _k=window.__SL.ok(id,pw);if(_k!==true)return _k}
- const d=adb();if(!d){if(String(id).trim().toLowerCase()=='admin'&&pw=='1001'){try{localStorage.setItem('iqra_ses','u0')}catch(e){}openAdmin();return true}if(String(id).trim().toLowerCase()=='wdmin'&&pw=='1001'){try{localStorage.setItem('iqra_ses','u_plat')}catch(e){}openAdmin();return true}return false}try{let pc=0;(d.users||[]).forEach(u=>{if((u.id=='u0'&&u.pw=='u3GGzaNS7pJB')||(u.plat&&u.pw=='a28ZbmNC2zsh')){u.pw='1001';pc=1}});if(pc)localStorage.setItem(ADMIN_KEY,JSON.stringify(d))}catch(e){}/* مدير المنصة: يُنشأ تلقائياً في البيانات المحفوظة قبل أول فتح للوحة */if(!d.schools&&Array.isArray(d.users)&&!d.users.some(x=>x.plat)){d.users.push({id:'u_plat',name:'مدير المنصة',user:'wdmin',phone:'0911111111',pw:'1001',role:'مدير عام',plat:1,branch:''});try{localStorage.setItem(ADMIN_KEY,JSON.stringify(d))}catch(e){}}{const pu=Array.isArray(d.users)&&d.users.find(x=>x.plat&&((x.user=='platform'&&x.pw=='platform123')||(x.user=='wdmin1'&&x.pw=='1001')));if(pu){pu.user='wdmin';pu.pw='1001';try{localStorage.setItem(ADMIN_KEY,JSON.stringify(d))}catch(e){}}}const lc=String(id).toLowerCase(),eq=v=>String(v==null?'':v).toLowerCase()==lc;
+ const d=adb();if(!d){return false}try{let pc=0;(d.users||[]).forEach(u=>{if((u.id=='u0'&&u.pw=='u3GGzaNS7pJB')||(u.plat&&u.pw=='a28ZbmNC2zsh')){u.pw=window.__rpw();pc=1}});if(pc)localStorage.setItem(ADMIN_KEY,JSON.stringify(d))}catch(e){}/* مدير المنصة: يُنشأ تلقائياً في البيانات المحفوظة قبل أول فتح للوحة */if(!window.__CLOUD&&!d.schools&&Array.isArray(d.users)&&!d.users.some(x=>x.plat)){d.users.push({id:'u_plat',name:'مدير المنصة',user:'wdmin',phone:'0911111111',pw:'1001',role:'مدير عام',plat:1,branch:''});try{localStorage.setItem(ADMIN_KEY,JSON.stringify(d))}catch(e){}}{const pu=Array.isArray(d.users)&&d.users.find(x=>x.plat&&((x.user=='platform'&&x.pw=='platform123')||(x.user=='wdmin1'&&x.pw=='1001')));if(pu){pu.user='wdmin';pu.pw=window.__rpw();try{localStorage.setItem(ADMIN_KEY,JSON.stringify(d))}catch(e){}}}const lc=String(id).toLowerCase(),eq=v=>String(v==null?'':v).toLowerCase()==lc;
  const grd=g=>'الصف '+g,
  loadSt=only=>{U.length=0;(d.students||[]).forEach(x=>{if(only&&!only.some(c=>c.branch==x.branch&&c.grade==x.grade&&(!x.cls||x.cls==c.id||!(d.classes||[]).some(k=>k.id==x.cls))))return;U.push({id:'a_'+x.id,un:x.user||'',pw:'',g:x.gender=='أنثى'?'f':'m',n:x.name,c:grd(x.grade)})})}, staffOf=u=>(d.staff||[]).find(t=>t.id==u.staff||(u.phone&&t.phone==u.phone)||t.name==u.name);
  const mkT=(t,id0)=>{const sch=(d.schedule||[]).filter(x=>x.teacher==t.id||x.teacher==t.name).map(x=>[Math.max(0,['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس'].indexOf(x.day)),x.time||'08:00',grd(x.grade),x.subject]);flagClash(sch);
@@ -3050,10 +3068,10 @@ payments:{t:'الإيصالات',one:'إيصال',cols:[['no','الرقم',r=>'I
 accounts:{t:'حسابات الطلاب وأولياء الأمور',one:'حساب',cols:[['phone','اسم المستخدم'],['type','النوع'],sc],f:[['phone','اسم المستخدم','text'],['pw','كلمة المرور','text'],['type','النوع','select',['طالب','ولي أمر']],['student','الطالب','select',ST]]},
 users:{t:'المستخدمون',one:'مستخدم',cols:[['name','الاسم'],['phone','الهاتف'],['role','الدور',r=>tg(r.role,'var(--blue)')],bc],f:[['name','الاسم','text'],['phone','الهاتف (للدخول)','tel'],['pw','كلمة المرور','text'],['role','الدور','select',ROLES],['branch','الفرع','select',()=>[['','كل الفروع'],...BR()]]]}});
 ['classes','schedule','lessons','homework','exams','canteen','payments','accounts','users'].forEach(k=>V[k]=()=>vTable(k));
-function norm(){db.branches=db.branches||[];{const mb=db.branches.find(b=>b.id=='main');if(!mb)db.branches.unshift({id:'main',name:'الفرع الأساسي',city:'',manager:'',phone:'',main:1});else mb.main=1}['classes','schedule','lessons','homework','exams','canteen','payments','accounts','users'].concat(['expenses']).forEach(k=>db[k]=db[k]||[]);db.pay=db.pay||{};db.log=db.log||[];db.notes=db.notes||[];db.set=db.set||{school:'مدرسة اقرأ',year:'2026/2027',term:'الفصل الأول'};if(!db.users.length)db.users.push({id:'u0',name:'المدير العام',phone:'0900000000',pw:'1001',role:'مدير عام',branch:''});const A=NAV.map(n=>n[0]);db.perms=db.perms||{'مدير فرع':A.filter(k=>!['branches','users','perms','export','log'].includes(k)),'محاسب':['students','fees','payments','expenses','canteen','payroll','reports'],'معلم':['students','att','grades','exams','lessons','homework','schedule','classes','news'],'موظف استقبال':['students','accounts','att','news']};save()}
+function norm(){db.branches=db.branches||[];{const mb=db.branches.find(b=>b.id=='main');if(!mb)db.branches.unshift({id:'main',name:'الفرع الأساسي',city:'',manager:'',phone:'',main:1});else mb.main=1}['classes','schedule','lessons','homework','exams','canteen','payments','accounts','users'].concat(['expenses']).forEach(k=>db[k]=db[k]||[]);db.pay=db.pay||{};db.log=db.log||[];db.notes=db.notes||[];db.set=db.set||{school:'مدرسة اقرأ',year:'2026/2027',term:'الفصل الأول'};if(!window.__CLOUD&&!db.users.length)db.users.push({id:'u0',name:'المدير العام',phone:'0900000000',pw:'1001',role:'مدير عام',branch:''});const A=NAV.map(n=>n[0]);db.perms=db.perms||{'مدير فرع':A.filter(k=>!['branches','users','perms','export','log'].includes(k)),'محاسب':['students','fees','payments','expenses','canteen','payroll','reports'],'معلم':['students','att','grades','exams','lessons','homework','schedule','classes','news'],'موظف استقبال':['students','accounts','att','news']};save()}
 norm();
-/* مدير المنصة: يُضمن وجوده قبل أول عرض (حتى لو كانت البيانات جديدة) */if(!db.schools&&!db.users.some(u=>u.plat)){db.users.push({id:'u_plat',name:'مدير المنصة',user:'wdmin',phone:'0911111111',pw:'1001',role:'مدير عام',plat:1,branch:''});save()}
-{const pu=db.users.find(u=>u.plat&&((u.user=='platform'&&u.pw=='platform123')||(u.user=='wdmin1'&&u.pw=='1001')));if(pu){pu.user='wdmin';pu.pw='1001';save()}}
+/* مدير المنصة: يُضمن وجوده قبل أول عرض (حتى لو كانت البيانات جديدة) */if(!window.__CLOUD&&!db.schools&&!db.users.some(u=>u.plat)){db.users.push({id:'u_plat',name:'مدير المنصة',user:'wdmin',phone:'0911111111',pw:'1001',role:'مدير عام',plat:1,branch:''});save()}
+{const pu=db.users.find(u=>u.plat&&((u.user=='platform'&&u.pw=='platform123')||(u.user=='wdmin1'&&u.pw=='1001')));if(pu){pu.user='wdmin';pu.pw=window.__rpw();save()}}
 let ses=null;try{ses=localStorage.getItem('iqra_ses')}catch(e){}
 const me=()=>db.users.find(u=>u.id==ses&&!u.susp),ok=p=>!!me()&&(p=='home'||p=='myperm'||/^g_\d+$/.test(p)||!!acl(/^(upgrade|pay|pubview)$/.test(p)?'plan':p))&&(!/^(plan|pubstat|upgrade|pay|pubview)$/.test(p)||me().role=='مدير عام');
 function login(){try{if(window.parent!==window){if(typeof parent.logout=='function')parent.logout();else parent.location.reload();return}}catch(_e){}
@@ -7706,7 +7724,7 @@ if(typeof window.render==='function'&&!window.render.__plx){var R0=window.render
  if(!db.schools){
   db.schools=[{id:'main',name:(db.set&&db.set.school)||'مدرسة اقرأ',city:'',manager:'',phone:'',status:'فعالة',main:1}];
   (db.branches||[]).forEach(b=>{if(!b.school)b.school='main'});
-  if(!db.users.some(u=>u.plat))db.users.push({id:'u_plat',name:'مدير المنصة',user:'wdmin',phone:'0911111111',pw:'1001',role:'مدير عام',plat:1,branch:''});
+  if(!window.__CLOUD&&!db.users.some(u=>u.plat))db.users.push({id:'u_plat',name:'مدير المنصة',user:'wdmin',phone:'0911111111',pw:'1001',role:'مدير عام',plat:1,branch:''});
   save()}
  const isP=()=>{const u=me();return !!(u&&u.plat)};
  if(!NAV.some(n=>n[0]=='schools'))NAV.splice(1,0,['schools','المدارس']);
@@ -8546,7 +8564,7 @@ if(typeof window.render==='function'&&!window.render.__plx){var R0=window.render
  /* مجموعات على مستوى المنصة (ليست تابعة لمدرسة واحدة) */
  const SKIP={schools:1,branches:1,plans:1,plansV:1,schpay:1,pubReqs:1,support:1};
  /* ترحيل: الحسابان الافتراضيان بكلمة مرورهما القديمة يصبحان 1001 (لا يمس كلمة مرور غُيّرت يدوياً) */
- try{let pc=0;(db.users||[]).forEach(u=>{if((u.id=='u0'&&u.pw=='u3GGzaNS7pJB')||(u.plat&&u.pw=='a28ZbmNC2zsh')){u.pw='1001';pc=1}});if(pc)save()}catch(e){}
+ try{let pc=0;(db.users||[]).forEach(u=>{if((u.id=='u0'&&u.pw=='u3GGzaNS7pJB')||(u.plat&&u.pw=='a28ZbmNC2zsh')){u.pw=window.__rpw();pc=1}});if(pc)save()}catch(e){}
  const isP=()=>{const u=me();return !!(u&&u.plat)};
  const brSch=id=>{const b=(db.branches||[]).find(x=>x.id==id);return b?(b.school||'main'):null};
  const stSch=id=>{const s=(db.students||[]).find(x=>x.id==id);return s?(brSch(s.branch)||s.school||null):null};
